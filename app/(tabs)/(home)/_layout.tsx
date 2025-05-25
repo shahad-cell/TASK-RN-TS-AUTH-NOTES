@@ -1,24 +1,26 @@
-import colors from "../../../data/styling/colors";
+import React, { useContext } from "react";
+import { Button } from "react-native";
 import { Stack } from "expo-router";
-import React from "react";
+import AuthContext from "@/context/AuthContext";
+import { deleteToken } from "@/api/storage";
 
-const HomeLayout = () => {
+export default function HomeLayout() {
+  const { setIsAuthenticated } = useContext(AuthContext);
+
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.primary,
-        },
-        headerTitleStyle: {
-          color: colors.white,
-        },
+        headerRight: () => (
+          <Button
+            title="Logout"
+            onPress={async () => {
+              await deleteToken();
+              setIsAuthenticated(false);
+            }}
+            color="red"
+          />
+        ),
       }}
-    >
-      <Stack.Screen name="index" options={{ title: "Home" }} />
-      <Stack.Screen name="[noteId]" options={{ title: "Note Details" }} />
-    </Stack>
+    />
   );
-};
-
-export default HomeLayout;
+}
