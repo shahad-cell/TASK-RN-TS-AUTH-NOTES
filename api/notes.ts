@@ -1,29 +1,34 @@
 import instance from ".";
 import { NoteType } from "../types/NoteType";
 
-const getAllNotes = async () => {
-    const { data } = await instance.get("/notes");
-    return data;
+// ✅ Get all notes
+const getAllNotes = async (): Promise<NoteType[]> => {
+  const { data } = await instance.get("/notes");
+  return data;
 };
 
-const getNote = async (noteId: string) => {
-    const { data } = await instance.get(`/notes/${noteId}`);
-    return data;
+// ✅ Get one note by ID
+const getNote = async (noteId: string): Promise<NoteType> => {
+  const { data } = await instance.get(`/notes/${noteId}`);
+  return data;
 };
 
-const createNote = async (noteInfo: NoteType) => {
-    const { data } = await instance.post("/notes", noteInfo);
-    return data;
+// ✅ Create a new note
+const createNote = async (noteInfo: NoteType): Promise<NoteType> => {
+  const { data } = await instance.post("/notes", noteInfo);
+  return data;
 };
 
-const updateNote = async (noteInfo: NoteType) => {
-    const { data } = await instance.put(`/notes/${noteInfo._id}`, noteInfo);
-    return data;
+// ✅ Update an existing note
+const updateNote = async (noteInfo: NoteType): Promise<NoteType> => {
+  const { data } = await instance.put(`/notes/${noteInfo._id}`, noteInfo);
+  return data;
 };
 
-const deleteNote = async (noteId: string) => {
-    const { data } = await instance.delete(`/notes/${noteId}`);
-    return data;
+// ✅ Delete a note by ID
+const deleteNote = async (noteId: string): Promise<{ message: string }> => {
+  const { data } = await instance.delete(`/notes/${noteId}`);
+  return data;
 };
 
-export { getAllNotes, createNote, updateNote, deleteNote, getNote };
+export { getAllNotes, getNote, createNote, updateNote, deleteNote };

@@ -1,22 +1,38 @@
+import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import colors from "../data/styling/colors";
-import { StatusBar } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AuthContext from "../context/AuthContext";
+import { getToken, storeToken } from "../api/storage";
+
+
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
-  const queryClient = new QueryClient();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [checkingAuth, setCheckingAuth] = useState<boolean>(true); // wait before rendering
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await getToken();
+      if (token) setIsAuthenticated(true);
+      setCheckingAuth(false);
+    };
+    checkToken();
+  }, []);
+
+  if (checkingAuth) return null; // ✅ Optional: Show loading spinner here
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-        <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
+    <QueryClientProvider client={queryClient}>
+      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          {isAuthenticated ? (
             <Stack.Screen name="(tabs)" />
-          </Stack>
-        </QueryClientProvider>
-        <StatusBar barStyle={"light-content"} />
-      </SafeAreaView>
-    </SafeAreaProvider>
+          ) : (
+            <Stack.Screen name="(auth)" />
+          )}
+        </Stack>
+      </AuthContext.Provider>
+    </QueryClientProvider>
   );
 }
